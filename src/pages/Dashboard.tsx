@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getBalance, getExpensesByCategory, getMonthlySummary } from '../api/transactions.api';
 import type { Balance, CategorySummary, MonthlySummary } from '../types/transaction.types';
+import TransactionForm from '../components/TransactionForm';
 import {
   PieChart, Pie, Cell, Tooltip, Legend,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer,
@@ -19,24 +20,25 @@ function Dashboard() {
   const [monthly, setMonthly] = useState<MonthlySummary[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadData() {
-      if (!token) return;
-      try {
-        const [balanceData, categoryData, monthlyData] = await Promise.all([
-          getBalance(token),
-          getExpensesByCategory(token),
-          getMonthlySummary(token),
-        ]);
-        setBalance(balanceData);
-        setCategories(categoryData);
-        setMonthly(monthlyData);
-      } finally {
-        setLoading(false);
-      }
+  const loadData = useCallback(async () => {
+    if (!token) return;
+    try {
+      const [balanceData, categoryData, monthlyData] = await Promise.all([
+        getBalance(token),
+        getExpensesByCategory(token),
+        getMonthlySummary(token),
+      ]);
+      setBalance(balanceData);
+      setCategories(categoryData);
+      setMonthly(monthlyData);
+    } finally {
+      setLoading(false);
     }
+  }, [token]);
+
+  useEffect(() => {
     loadData();
-  }, [token]); // se re-ejecuta si el token cambia (ej: nuevo login)
+  }, [loadData]);
 
   function handleLogout() {
     logout();
@@ -52,7 +54,8 @@ function Dashboard() {
         <button onClick={handleLogout}>Cerrar sesión</button>
       </div>
 
-      {/* Tarjetas de balance */}
+      <TransactionForm onCreated={loadData} />
+
       <div style={{ display: 'flex', gap: 20, margin: '20px 0' }}>
         <Card label="Ingresos" value={balance?.totalIncome} color="#00C49F" />
         <Card label="Gastos" value={balance?.totalExpense} color="#FF8042" />
@@ -60,20 +63,11 @@ function Dashboard() {
       </div>
 
       <div style={{ display: 'flex', gap: 40, flexWrap: 'wrap' }}>
-        {/* Gráfica de pie: gastos por categoría */}
         <div style={{ width: 400, height: 300 }}>
           <h3>Gastos por categoría</h3>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie
-                data={categories}
-                dataKey="total"
-                nameKey="category"
-                cx="50%"
-                cy="50%"
-                outerRadius={90}
-                label
-              >
+              <Pie data={categories} dataKey="total" nameKey="category" cx="50%" cy="50%" outerRadius={90} label>
                 {categories.map((_, index) => (
                   <Cell key={index} fill={COLORS[index % COLORS.length]} />
                 ))}
@@ -84,7 +78,6 @@ function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Gráfica de barras: ingresos vs gastos por mes */}
         <div style={{ width: 500, height: 300 }}>
           <h3>Ingresos vs Gastos por mes</h3>
           <ResponsiveContainer width="100%" height="100%">
