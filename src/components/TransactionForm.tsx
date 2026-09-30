@@ -28,13 +28,12 @@ function TransactionForm({ onCreated }: { onCreated: () => void }) {
         date,
       });
 
-      // form reset
       setAmount('');
       setCategory('');
       setDescription('');
       setDate('');
 
-      onCreated(); // tells parent component to refresh the transaction list
+      onCreated();
     } catch {
       setError('No se pudo guardar la transacción');
     } finally {
@@ -42,42 +41,81 @@ function TransactionForm({ onCreated }: { onCreated: () => void }) {
     }
   }
 
+  const inputClass =
+    'w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm';
+  const labelClass = 'block text-xs font-medium text-neutral-900 mb-1';
+
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end', marginBottom: 30 }}>
-      <div>
-        <label>Monto</label><br />
-        <input type="number" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} required />
-      </div>
+    <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+      <h3 className="text-base font-semibold text-neutral-900 mb-4">Nueva transacción</h3>
+      <form onSubmit={handleSubmit} className="flex flex-wrap gap-4 items-end">
+        <div className="w-28">
+          <label className={labelClass}>Monto</label>
+          <input
+            type="number"
+            step="0.01"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+            className={inputClass}
+          />
+        </div>
 
-      <div>
-        <label>Tipo</label><br />
-        <select value={type} onChange={(e) => setType(e.target.value as 'income' | 'expense')}>
-          <option value="expense">Gasto</option>
-          <option value="income">Ingreso</option>
-        </select>
-      </div>
+        <div className="w-32">
+          <label className={labelClass}>Tipo</label>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value as 'income' | 'expense')}
+            className={inputClass}
+          >
+            <option value="expense">Gasto</option>
+            <option value="income">Ingreso</option>
+          </select>
+        </div>
 
-      <div>
-        <label>Categoría</label><br />
-        <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} required />
-      </div>
+        <div className="w-36">
+          <label className={labelClass}>Categoría</label>
+          <input
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+            className={inputClass}
+          />
+        </div>
 
-      <div>
-        <label>Descripción</label><br />
-        <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
-      </div>
+        <div className="flex-1 min-w-40">
+          <label className={labelClass}>Descripción</label>
+          <input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className={inputClass}
+          />
+        </div>
 
-      <div>
-        <label>Fecha</label><br />
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-      </div>
+        <div className="w-40">
+          <label className={labelClass}>Fecha</label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
+            className={inputClass}
+          />
+        </div>
 
-      <button type="submit" disabled={submitting}>
-        {submitting ? 'Guardando...' : 'Agregar'}
-      </button>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="bg-primary text-white text-sm font-medium px-5 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition h-fit"
+        >
+          {submitting ? 'Guardando...' : 'Agregar'}
+        </button>
 
-      {error && <p style={{ color: 'red', width: '100%' }}>{error}</p>}
-    </form>
+        {error && <p className="text-danger text-sm w-full">{error}</p>}
+      </form>
+    </div>
   );
 }
 

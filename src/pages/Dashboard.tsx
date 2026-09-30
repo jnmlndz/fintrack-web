@@ -45,63 +45,100 @@ function Dashboard() {
     navigate('/login');
   }
 
-  if (loading) return <p style={{ padding: 40 }}>Cargando...</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+        <p className="text-neutral-900">Cargando...</p>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: 40, fontFamily: 'sans-serif' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Hola, {user?.name} 👋</h1>
-        <button onClick={handleLogout}>Cerrar sesión</button>
+    <div className="min-h-screen bg-neutral-50 p-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold text-neutral-900">
+          Hola, {user?.name} 👋
+        </h1>
+        <button
+          onClick={handleLogout}
+          className="bg-white border border-neutral-200 text-neutral-900 text-sm font-medium px-4 py-2 rounded-lg hover:bg-neutral-50 transition"
+        >
+          Cerrar sesión
+        </button>
       </div>
 
       <TransactionForm onCreated={loadData} />
 
-      <div style={{ display: 'flex', gap: 20, margin: '20px 0' }}>
-        <Card label="Ingresos" value={balance?.totalIncome} color="#00C49F" />
-        <Card label="Gastos" value={balance?.totalExpense} color="#FF8042" />
-        <Card label="Balance" value={balance?.balance} color="#0088FE" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <Card label="Ingresos" value={balance?.totalIncome} color="secondary" />
+        <Card label="Gastos" value={balance?.totalExpense} color="danger" />
+        <Card label="Balance" value={balance?.balance} color="primary" />
       </div>
 
-      <div style={{ display: 'flex', gap: 40, flexWrap: 'wrap' }}>
-        <div style={{ width: 400, height: 300 }}>
-          <h3>Gastos por categoría</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie data={categories} dataKey="total" nameKey="category" cx="50%" cy="50%" outerRadius={90} label>
-                {categories.map((_, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h3 className="text-base font-semibold text-neutral-900 mb-4">
+            Gastos por categoría
+          </h3>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={categories} dataKey="total" nameKey="category" cx="50%" cy="50%" outerRadius={90} label>
+                  {categories.map((_, index) => (
+                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        <div style={{ width: 500, height: 300 }}>
-          <h3>Ingresos vs Gastos por mes</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthly}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="income" fill="#00C49F" name="Ingresos" />
-              <Bar dataKey="expense" fill="#FF8042" name="Gastos" />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h3 className="text-base font-semibold text-neutral-900 mb-4">
+            Ingresos vs Gastos por mes
+          </h3>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={monthly}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="income" fill="#00C49F" name="Ingresos" />
+                <Bar dataKey="expense" fill="#FF8042" name="Gastos" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function Card({ label, value, color }: { label: string; value?: number; color: string }) {
+function Card({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value?: number;
+  color: 'primary' | 'secondary' | 'danger';
+}) {
+  const colorClasses = {
+    primary: 'border-primary text-primary',
+    secondary: 'border-secondary text-secondary',
+    danger: 'border-danger text-danger',
+  };
+
   return (
-    <div style={{ border: `2px solid ${color}`, borderRadius: 8, padding: 16, minWidth: 150 }}>
-      <p style={{ margin: 0, color: '#666' }}>{label}</p>
-      <h2 style={{ margin: 0, color }}>${value?.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</h2>
+    <div className={`bg-white border-2 rounded-xl p-5 ${colorClasses[color]}`}>
+      <p className="text-sm text-neutral-900">{label}</p>
+      <h2 className="text-2xl font-bold mt-1">
+        ${value?.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+      </h2>
     </div>
   );
 }

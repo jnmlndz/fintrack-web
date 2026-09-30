@@ -18,9 +18,8 @@ function Register() {
 
     try {
       await register({ name, email, password });
-      navigate('/login'); // después de registrarse, va a loguearse con sus nuevas credenciales
+      navigate('/login');
     } catch (err: any) {
-      // si el backend regresa 409 (email duplicado), mostramos ese mensaje específico
       if (err.response?.status === 409) {
         setError('Ese email ya está registrado');
       } else {
@@ -32,55 +31,64 @@ function Register() {
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: '100px auto', fontFamily: 'sans-serif' }}>
-      <h1>FinTrack</h1>
-      <h2>Crear cuenta</h2>
+    <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+      <div className="w-full max-w-sm bg-white rounded-xl shadow-md p-8">
+        <h1 className="text-2xl font-bold text-primary text-center">FinTrack</h1>
+        <h2 className="text-lg text-neutral-900 text-center mb-6">Crear cuenta</h2>
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: 12 }}>
-          <label>Nombre</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            style={{ width: '100%', padding: 8 }}
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-900 mb-1">Nombre</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
 
-        <div style={{ marginBottom: 12 }}>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: 8 }}
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-900 mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
 
-        <div style={{ marginBottom: 12 }}>
-          <label>Contraseña</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            style={{ width: '100%', padding: 8 }}
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-900 mb-1">Contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
 
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+          {error && <p className="text-danger text-sm">{error}</p>}
 
-        <button type="submit" disabled={loading} style={{ width: '100%', padding: 10 }}>
-          {loading ? 'Creando cuenta...' : 'Registrarme'}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-primary text-white font-medium py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition"
+          >
+            {loading ? 'Creando cuenta...' : 'Registrarme'}
+          </button>
+        </form>
 
-      <p style={{ marginTop: 16 }}>
-        ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-      </p>
+        <p className="text-sm text-center text-neutral-900 mt-4">
+          ¿Ya tienes cuenta?{' '}
+          <Link to="/login" className="text-primary font-medium hover:underline">
+            Inicia sesión
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

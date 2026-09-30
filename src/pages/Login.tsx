@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate , Link} from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../api/auth.api';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,18 +9,18 @@ function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login: setAuthData } = useAuth(); // renombramos para no chocar con la función "login" de la API
+  const { login: setAuthData } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault(); // evita que el formulario recargue la página (comportamiento default del navegador)
+    e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
       const data = await login(email, password);
-      setAuthData(data.user, data.access_token); // guarda el usuario y token en el Context
-      navigate('/dashboard'); // redirige (aunque el Dashboard no exista todavía, lo creamos después)
+      setAuthData(data.user, data.access_token);
+      navigate('/dashboard');
     } catch {
       setError('Email o contraseña incorrectos');
     } finally {
@@ -29,43 +29,52 @@ function Login() {
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: '100px auto', fontFamily: 'sans-serif' }}>
-      <h1>FinTrack</h1>
-      <h2>Iniciar sesión</h2>
+    <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+      <div className="w-full max-w-sm bg-white rounded-xl shadow-md p-8">
+        <h1 className="text-2xl font-bold text-primary text-center">FinTrack</h1>
+        <h2 className="text-lg text-neutral-900 text-center mb-6">Iniciar sesión</h2>
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: 12 }}>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: 8 }}
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-900 mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
 
-        <div style={{ marginBottom: 12 }}>
-          <label>Contraseña</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: 8 }}
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-900 mb-1">Contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
 
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+          {error && <p className="text-danger text-sm">{error}</p>}
 
-        <button type="submit" disabled={loading} style={{ width: '100%', padding: 10 }}>
-          {loading ? 'Ingresando...' : 'Ingresar'}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-primary text-white font-medium py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition"
+          >
+            {loading ? 'Ingresando...' : 'Ingresar'}
+          </button>
+        </form>
 
-      <p style={{ marginTop: 16 }}>
-        ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
-      </p>
+        <p className="text-sm text-center text-neutral-900 mt-4">
+          ¿No tienes cuenta?{' '}
+          <Link to="/register" className="text-primary font-medium hover:underline">
+            Regístrate
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
