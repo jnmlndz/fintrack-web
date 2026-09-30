@@ -1,13 +1,14 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { getBalance, getExpensesByCategory, getMonthlySummary } from '../api/transactions.api';
-import type { Balance, CategorySummary, MonthlySummary } from '../types/transaction.types';
+import { getBalance, getExpensesByCategory, getMonthlySummary, getTransactions } from '../api/transactions.api';
+import type { Balance, CategorySummary, MonthlySummary, Transaction } from '../types/transaction.types';
 import TransactionForm from '../components/TransactionForm';
 import {
   PieChart, Pie, Cell, Tooltip, Legend,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer,
 } from 'recharts';
+import TransactionList from '../components/TransactionList';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28BFE', '#FF6699'];
 
@@ -20,17 +21,22 @@ function Dashboard() {
   const [monthly, setMonthly] = useState<MonthlySummary[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+
   const loadData = useCallback(async () => {
     if (!token) return;
     try {
-      const [balanceData, categoryData, monthlyData] = await Promise.all([
+      const [balanceData, categoryData, monthlyData, transactionsData] = await Promise.all([
         getBalance(token),
         getExpensesByCategory(token),
         getMonthlySummary(token),
+        getTransactions(token),
       ]);
       setBalance(balanceData);
       setCategories(categoryData);
       setMonthly(monthlyData);
+      setTransactions(transactionsData);
     } finally {
       setLoading(false);
     }
@@ -114,6 +120,11 @@ function Dashboard() {
           </div>
         </div>
       </div>
+      
+      <div className="mt-6">
+          <TransactionList transactions={transactions} onChanged={loadData} />
+      </div>
+
     </div>
   );
 }

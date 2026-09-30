@@ -1,5 +1,7 @@
 import api from './axios';
 import type { Balance, CategorySummary, MonthlySummary } from '../types/transaction.types';
+import type { Transaction } from '../types/transaction.types';
+
 
 //setup
 
@@ -39,4 +41,28 @@ export async function createTransaction(token: string, payload: CreateTransactio
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
+}
+
+export async function getTransactions(token: string): Promise<Transaction[]> {
+  const response = await api.get<Transaction[]>('/transactions', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+}
+
+export async function updateTransaction(
+  token: string,
+  id: number,
+  payload: Partial<CreateTransactionPayload>,
+): Promise<Transaction> {
+  const response = await api.patch<Transaction>(`/transactions/${id}`, payload, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+}
+
+export async function deleteTransaction(token: string, id: number): Promise<void> {
+  await api.delete(`/transactions/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 }
